@@ -2,99 +2,123 @@
 #include <winsock.h>
 #include <string>
 #include <ctime>
+#include <fstream>
 using namespace std;
 
-#define PORT 9909
 #define bufferSize 768
 int nClientSocket;
 struct sockaddr_in srv;
 
-int main()
-{
+int exitFail() {
+	WSACleanup();
+	system("PAUSE");
+	exit(EXIT_FAILURE);
+	return 0;
+}
+
+int main() {
+	//Initialization --------------------------
+	cout << "[INFO] Starting up...\n";
 	srand(time(0));
 	int nRet = 0, result = 0;
-	string SrvIP, ID;
-	cout << "Input Server IP: ";
-	getline(cin, SrvIP);
-	cout << "Input ID Komputer: ";
-	getline(cin, ID);
+	string SrvIP, ID, PORT;
+	bool connected = false;
+	//1. Read ClientSettings.txt --------------
+	cout << "[INFO] Reading ClientSettings.txt...\n";
+	ifstream in("ClientSettings.txt");
+	in >> SrvIP >> PORT >> ID;
+	in.close();
+	if (SrvIP == "" || PORT == "" || ID == "") {
+		cout << "[INFO] ClientSettings.txt not found.\n";
+		cout << "[SETUP] Input Server IP: ";
+		getline(cin, SrvIP);
+		cout << "[SETUP] Input Connection Port: ";
+		getline(cin, PORT);
+		cout << "[SETUP] Input Client ID: ";
+		getline(cin, ID);
+		cout << "[INFO] Saving to ClientSettings.txt...\n";
+		ofstream out("ClientSettings.txt");
+		out << SrvIP << endl << PORT << endl << ID;
+		out.close();
+	}
 	const char* ServerIP = SrvIP.c_str();
-
-	//Initialize WSA
+	cout << "\n------------------------------\n";
+	cout << "[ Client Settings ]\n\n";
+	cout << "Server IP: " << SrvIP << endl;
+	cout << "Connection Port: " << PORT << endl;
+	cout << "Client ID: " << ID << endl;
+	cout << "------------------------------\n\n";
+	//2. Initialize WSA -----------------------
 	WSADATA ws;
 	if (WSAStartup(MAKEWORD(2, 2), &ws) < 0) {
-		cout << "Failed to initialize WSA.\n";
-		WSACleanup();
-		exit(EXIT_FAILURE);
+		cout << "[ERROR] Error initializing WSA.\n";
+		exitFail();
 	}
-
-	//Create Socket
+	//3. Create Socket ------------------------
 	nClientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (nClientSocket < 0) {
-		cout << "Socket isn't opened.\n";
-		WSACleanup();
-		exit(EXIT_FAILURE);
+		cout << "[ERROR] Error creating socket.\n";
+		exitFail();
 	}
-
-	//Inisialisasi enviroment untuk sockaddr
+	//4. Initialize Enviroment ----------------
 	srv.sin_family = AF_INET;
-	srv.sin_port = htons(PORT);
+	srv.sin_port = htons(stoi(PORT));
 	srv.sin_addr.s_addr = inet_addr(ServerIP);
 	memset(&(srv.sin_zero), 0, 8);
-
-	//Connect ke Server
+	//5. Connect ke Server --------------------
 	nRet = connect(nClientSocket, (struct sockaddr*)&srv, sizeof(srv));
-	if (nRet < 0) {
-		cout << "Connection failed.\n";
-		WSACleanup();
-		exit(EXIT_FAILURE);
+	while (nRet < 0) {
+		cout << "[WARN] Failed to connect. Reconnecting...\n";
+		nRet = connect(nClientSocket, (struct sockaddr*)&srv, sizeof(srv));
 	}
-	else {
-		cout << "Connected to Server!\n";
-		char buff[bufferSize] = { 0, };
+	cout << "[INFO] Connected to Server!\n";
+	char buff[bufferSize] = { 0, };
+	result = send(nClientSocket, ID.c_str(), 10, 0); //Kirim ID Client
+	//-----------------------------------------
 
-		//Loop send & receive messages
-		int startuptime = time(0);//waktu program menyala (buat uptime)
-		int refreshTime = (rand() % (15 - 5 + 1)) + 5;
-		cout << "INFO: Refresh every " << refreshTime << " seconds.\n\n";
-		while (1) {
+	int startuptime = time(0);
+	int refreshTime = (rand() % (15 - 5 + 1)) + 5;
+	cout << "[INFO] Uploads uptime every " << refreshTime << " seconds.\n";
+	while (1) {
+		//Upload uptime ---------------------------
+		int currTime = time(0) - startuptime;
+		int d = currTime / (24 * 3600);
+		int h = (currTime - (d * 3600)) / 3600;
+		int m = (currTime - (d * 3600) - (h * 3600)) / 60;
+		currTime = currTime - (d * 3600) - (h * 3600) - (m * 60);
+		string msg = ID + "/Uptime/" + to_string(d) + ':' + to_string(h) + ':' + to_string(m) + ':' + to_string(currTime) + "/";
+		const char* cstr = msg.c_str();
+		cout << "[INFO] Updating Uptime...\n";
+		result = send(nClientSocket, cstr, 30, 0);
+		//-----------------------------------------
 
-			//Menunggu pesan dari server + Cek Koneksi dengan kirim Uptime..
-			int currTime = time(0) - startuptime; //Output seconds
-			int d = currTime / (24 * 3600);
-			int h = (currTime - (d * 3600)) / 3600;
-			int m = (currTime - (d * 3600) - (h * 3600)) / 60;
-			currTime = currTime - (d * 3600) - (h * 3600) - (m * 60);
+		//Receive command + Check connection ------
+		//result = recv(nClientSocket, buff, 10, 0);
+		if (result < 0) {
+			cout << "[WARN] Disconnected from Server. Reconnecting...\n";
 
-			string total = to_string(d) + ':' + to_string(h) + ':' + to_string(m) + ':' + to_string(currTime);
-			string msg = ID + "/Uptime/" + total + "/";
-			const char* cstr = msg.c_str();
-
-			cout << "INFO: Updating Uptime.";
-
-			result = send(nClientSocket, cstr, bufferSize, 0);
-			result = recv(nClientSocket, buff, bufferSize, 0);
-			cout << "\nSERVER: " << buff << endl;
-			if (result < 0) {
-				cout << "Disconnected from Server.\n";
-				WSACleanup();
-				exit(EXIT_FAILURE);
-			}
-			else {
-				string buff_s(buff);
-				//Lakukan update berdasarkan 
-				//Command dari Server.
-
-				/*cout << "Input pesan baru ke Server: ";
-				string msg;
-				getline(cin, msg);
-				const char* cstr = msg.c_str();
-				result = send(nClientSocket, cstr, bufferSize, 0);*/
-			}
-
-			//ide: supaya tidak bersamaan, coba random delay???
-			Sleep(refreshTime * 1000);
+			cout << "( KODE BELUM BISA AUTO RECCONECT )\n";
+			exitFail();
+			//do {
+			//	cout << "[WARN] Failed to connect. Reconnecting...\n";
+			//	nRet = connect(nClientSocket, (struct sockaddr*)&srv, sizeof(srv));
+			//} while (nRet < 0);
+			//cout << "[INFO] Connected to Server!\n";
 		}
-	}
+		//-----------------------------------------
 
+		//Upload Data -----------------------------
+		//cout << "[INFO] SERVER: " << buff << endl;
+		//string buff_s(buff);
+		
+		//( Lakukan update berdasarkann Command dari Server )
+
+		////Kirim perintah ke Server
+		//string msg;
+		//getline(cin, msg);
+		//const char* cstr = msg.c_str();
+		//send(nClientSocket, cstr, bufferSize, 0);
+		//-----------------------------------------
+		Sleep(refreshTime * 1000);
+	}
 }
