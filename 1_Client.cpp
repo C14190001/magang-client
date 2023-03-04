@@ -73,11 +73,11 @@ int main() {
 	}
 	cout << "[INFO] Connected to Server!\n";
 	char buff[bufferSize] = { 0, };
-	result = send(nClientSocket, ID.c_str(), 10, 0); //Kirim ID Client
+	result = send(nClientSocket, ID.c_str(), 10, 0); //Sends Client ID
 	//-----------------------------------------
 
 	int startuptime = time(0);
-	int refreshTime = (rand() % (15 - 5 + 1)) + 5;
+	int refreshTime = (rand() % (15 - 5 + 1)) + 5; //Random 5 - 15 Seconds
 	cout << "[INFO] Uploads uptime every " << refreshTime << " seconds.\n";
 	while (1) {
 		//Upload uptime ---------------------------
@@ -93,7 +93,7 @@ int main() {
 		//-----------------------------------------
 
 		//Receive command + Check connection ------
-		//result = recv(nClientSocket, buff, 10, 0);
+		//result = recv(nClientSocket, buff, 30, 0);
 		if (result < 0) {
 			cout << "[WARN] Disconnected from Server. Reconnecting...\n";
 
