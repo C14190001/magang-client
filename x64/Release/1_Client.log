@@ -1,8 +1,8 @@
 ﻿  1_Client.cpp
-D:\LEAP Magang\1_Client\1_Client.cpp(22,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-D:\LEAP Magang\1_Client\1_Client.cpp(58,24): warning C4244: '=': conversion from 'SOCKET' to 'int', possible loss of data
-D:\LEAP Magang\1_Client\1_Client.cpp(79,18): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
-D:\LEAP Magang\1_Client\1_Client.cpp(84,16): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
+D:\LEAP Magang\1_Client\1_Client.cpp(21,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+D:\LEAP Magang\1_Client\1_Client.cpp(61,24): warning C4244: '=': conversion from 'SOCKET' to 'int', possible loss of data
+D:\LEAP Magang\1_Client\1_Client.cpp(82,18): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
+D:\LEAP Magang\1_Client\1_Client.cpp(87,16): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
   Generating code
   1 of 211 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation

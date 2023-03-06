@@ -18,7 +18,6 @@ int exitFail() {
 
 int main() {
 	//Initialization --------------------------
-	cout << "[INFO] Starting up...\n";
 	srand(time(0));
 	int nRet = 0, result = 0;
 	string SrvIP, ID, PORT;
@@ -48,6 +47,10 @@ int main() {
 	cout << "Connection Port: " << PORT << endl;
 	cout << "Client ID: " << ID << endl;
 	cout << "------------------------------\n\n";
+
+	cout << "[INFO] Waiting 30 seconds for Client to finish starting up...\n";
+	Sleep(30000);
+	cout << "[INFO] Starting up...\n";
 	//2. Initialize WSA -----------------------
 	WSADATA ws;
 	if (WSAStartup(MAKEWORD(2, 2), &ws) < 0) {
