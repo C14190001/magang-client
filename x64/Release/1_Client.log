@@ -1,11 +1,11 @@
 ﻿  1_Client.cpp
 D:\LEAP Magang\1_Client\ipconfigScript.h(16,7): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-D:\LEAP Magang\1_Client\1_Client.cpp(23,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-D:\LEAP Magang\1_Client\1_Client.cpp(63,24): warning C4244: '=': conversion from 'SOCKET' to 'int', possible loss of data
-D:\LEAP Magang\1_Client\1_Client.cpp(84,18): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
-D:\LEAP Magang\1_Client\1_Client.cpp(93,16): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
+D:\LEAP Magang\1_Client\1_Client.cpp(98,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+D:\LEAP Magang\1_Client\1_Client.cpp(140,24): warning C4244: '=': conversion from 'SOCKET' to 'int', possible loss of data
+D:\LEAP Magang\1_Client\1_Client.cpp(161,18): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
+D:\LEAP Magang\1_Client\1_Client.cpp(166,16): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
   Generating code
-  2 of 292 functions ( 0.7%) were compiled, the rest were copied from previous compilation.
+  1 of 301 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code

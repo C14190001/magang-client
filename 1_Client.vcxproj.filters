@@ -20,10 +20,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="wmiSystemInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ipconfigScript.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wmiSystemInfo.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

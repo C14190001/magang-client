@@ -11,6 +11,81 @@ using namespace std;
 int nClientSocket;
 struct sockaddr_in srv;
 
+void viewSpecs() {
+	string substring = "";
+	bool igpu = false; int b = 0; double c = 0;
+	//PC Name
+	substring = getSystemInfo("SELECT * FROM Win32_ComputerSystem", "Name");
+	for (int i = 0; i < substring.length(); i++) {
+		if (substring[i] == '/') {
+			cout << "PC Name: " << substring.substr(0, i) << endl;
+			break;
+		}
+	}
+	//CPU
+	substring = getSystemInfo("SELECT * FROM Win32_Processor", "Name");
+	for (int i = 0; i < substring.length(); i++) {
+		if (substring[i] == '/') {
+			cout << "CPU: " << substring.substr(0, i) << endl;
+			break;
+		}
+	}
+	//GPU
+	substring = getSystemInfo("SELECT * FROM Win32_VideoController", "Name");
+	for (int i = 0; i < substring.length(); i++) {
+		if (!igpu) {
+			if (substring[i] == '/') {
+				if (i == substring.length() - 1) {
+					cout << "Intergrated GPU: " << substring.substr(b + 1, i - 1 - b) << endl;
+					break;
+				}
+				else {
+					cout << "Dedicated GPU: " << substring.substr(0, i) << endl;
+					b = i;
+					igpu = true;
+				}
+			}
+		}
+		else {
+			if (substring[i] == '/') {
+				cout << "Intergrated GPU: " << substring.substr(b + 1, i - 1 - b) << endl;
+				break;
+			}
+		}
+	}
+	//RAM
+	substring = getSystemInfo("SELECT * FROM Win32_PhysicalMemory", "Capacity");
+	b = 0;
+	for (int i = 0; i < substring.length(); i++) {
+		if (substring[i] == '/') {
+			c += stod(substring.substr(b, i));
+			b = i + 1;
+		}
+	}
+	cout << "RAM: " << int(c / 1073741824) << " GB\n";
+	//HDD
+	substring = getSystemInfo("SELECT * FROM Win32_DiskDrive", "Size");
+	b = 0; c = 0;
+	for (int i = 0; i < substring.length(); i++) {
+		if (substring[i] == '/') {
+			c += stod(substring.substr(b, i));
+			b = i + 1;
+		}
+	}
+	cout << "HDD: " << int(c / 1073741824) << " GB\n";
+	//IP Address
+	substring = getIPv4Address();
+	cout << "IP Address: " << substring << "\n";
+	//MAC Address
+	substring = getSystemInfo("SELECT * FROM Win32_NetworkAdapterConfiguration WHERE IPEnabled = True", "MACAddress");
+	for (int i = 0; i < substring.length(); i++) {
+		if (substring[i] == '/') {
+			cout << "MAC Address: " << substring.substr(0, i) << endl;
+			break;
+		}
+	}
+}
+
 int exitFail() {
 	WSACleanup();
 	system("PAUSE");
@@ -49,9 +124,11 @@ int main() {
 	cout << "Connection Port: " << PORT << endl;
 	cout << "Client ID: " << ID << endl;
 	cout << "------------------------------\n\n";
+	cout << "[INFO] Waiting 30 seconds for Client to finish starting up...\n"; Sleep(30000); cout << "\n------------------------------\n";
+	cout << "[ Client Specs ]\n\n";
+	viewSpecs();
+	cout << "------------------------------\n\n";
 
-	//cout << "[INFO] Waiting 30 seconds for Client to finish starting up...\n";
-	//Sleep(30000);
 	cout << "[INFO] Starting up...\n";
 	//2. Initialize WSA -----------------------
 	WSADATA ws;
@@ -84,11 +161,6 @@ int main() {
 	int startuptime = time(0);
 	int refreshTime = (rand() % (15 - 5 + 1)) + 5; //Random 5 - 15 Seconds
 	cout << "[INFO] Uploads uptime every " << refreshTime << " seconds.\n";
-
-	//Test Fungsi GET IP and GET SYSTEM INFO
-	cout << "\n[TEST] IP Address: " << getIPv4Address() << endl;
-	cout << "[TEST] GPU Info: " << getSystemInfo("SELECT * FROM Win32_VideoController", "Name") << "\n\n";
-
 	while (1) {
 		//Upload uptime ---------------------------
 		int currTime = time(0) - startuptime;
