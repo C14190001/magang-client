@@ -3,6 +3,8 @@
 #include <string>
 #include <ctime>
 #include <fstream>
+#include"wmiSystemInfo.h"
+#include"ipconfigScript.h"
 using namespace std;
 
 #define bufferSize 768
@@ -48,8 +50,8 @@ int main() {
 	cout << "Client ID: " << ID << endl;
 	cout << "------------------------------\n\n";
 
-	cout << "[INFO] Waiting 30 seconds for Client to finish starting up...\n";
-	Sleep(30000);
+	//cout << "[INFO] Waiting 30 seconds for Client to finish starting up...\n";
+	//Sleep(30000);
 	cout << "[INFO] Starting up...\n";
 	//2. Initialize WSA -----------------------
 	WSADATA ws;
@@ -82,6 +84,11 @@ int main() {
 	int startuptime = time(0);
 	int refreshTime = (rand() % (15 - 5 + 1)) + 5; //Random 5 - 15 Seconds
 	cout << "[INFO] Uploads uptime every " << refreshTime << " seconds.\n";
+
+	//Test Fungsi GET IP and GET SYSTEM INFO
+	cout << "\n[TEST] IP Address: " << getIPv4Address() << endl;
+	cout << "[TEST] GPU Info: " << getSystemInfo("SELECT * FROM Win32_VideoController", "Name") << "\n\n";
+
 	while (1) {
 		//Upload uptime ---------------------------
 		int currTime = time(0) - startuptime;
@@ -99,9 +106,9 @@ int main() {
 		//result = recv(nClientSocket, buff, 30, 0);
 		if (result < 0) {
 			cout << "[WARN] Disconnected from Server. Reconnecting...\n";
-
-			cout << "( KODE BELUM BISA AUTO RECCONECT )\n";
 			exitFail();
+
+			//KODE BELUM BISA AUTO RECCONECT
 			//do {
 			//	cout << "[WARN] Failed to connect. Reconnecting...\n";
 			//	nRet = connect(nClientSocket, (struct sockaddr*)&srv, sizeof(srv));
@@ -113,7 +120,7 @@ int main() {
 		//Upload Data -----------------------------
 		//cout << "[INFO] SERVER: " << buff << endl;
 		//string buff_s(buff);
-		
+
 		//( Lakukan update berdasarkann Command dari Server )
 
 		////Kirim perintah ke Server

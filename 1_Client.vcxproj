@@ -130,6 +130,10 @@
   <ItemGroup>
     <ClCompile Include="1_Client.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ipconfigScript.h" />
+    <ClInclude Include="wmiSystemInfo.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
